@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusShare — List Surplus Food</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    :root {
+      --primary: #2E7D32;
+      --primary-light: #4CAF50;
+      --primary-dark: #1B5E20;
+      --secondary: #FFC107;
+      --accent: #8BC34A;
+      --dark: #263238;
+      --light: #F5F5F5;
+      --gray: #607D8B;
+      --success: #4CAF50;
+      --warning: #FF9800;
+      --error: #F44336;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #F5F7FA;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    /* Header */
+    .topbar {
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+
+    .nav a.active {
+      color: white;
+    }
+
+    .nav a.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--primary);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--primary-light);
+    }
+
+    /* Main Content */
+    .container {
+      max-width: 1800px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+      height: fit-content;
+      position: sticky;
+      top: 100px;
+    }
+
+    .sidebar-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+    }
+
+    .sidebar-menu li {
+      margin-bottom: 0.75rem;
+    }
+
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--dark);
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar-menu a:hover, .sidebar-menu a.active {
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--primary);
+    }
+
+    .menu-icon {
+      width: 18px;
+      height: 18px;
+      opacity: 0.7;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: white;
+      border-radius: 16px;
+      padding: 2.5rem;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.05);
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--primary), var(--accent));
+    }
+
+    .form-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .form-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      position: relative;
+    }
+
+    .form-subtitle {
+      color: var(--gray);
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+    }
+
+    .form-steps {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .step {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #E0E0E0;
+    }
+
+    .step.active {
+      background: white;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    .form-label {
+      display: block;
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    .form-label span {
+      color: var(--gray);
+      font-size: 0.85rem;
+      margin-left: 0.25rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid #E0E0E0;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+    }
+
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    /* Button Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 1.75rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      border: none;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--primary);
+      border: 1px solid var(--primary-light);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(76, 175, 80, 0.1);
+    }
+
+    .btn-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Food Type Selector */
+    .food-type-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .food-type {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid #E0E0E0;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .food-type:hover {
+      border-color: var(--primary-light);
+    }
+
+    .food-type.selected {
+      border-color: var(--primary);
+      background: rgba(76, 175, 80, 0.05);
+    }
+
+    .food-type-icon {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 0.5rem;
+      opacity: 0.8;
+    }
+
+    .food-type-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    /* Image Upload */
+    .image-upload {
+      border: 2px dashed #BDBDBD;
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 1.5rem;
+    }
+
+    .image-upload:hover {
+      border-color: var(--primary);
+      background: rgba(76, 175, 80, 0.05);
+    }
+
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      opacity: 0.6;
+    }
+
+    .upload-text {
+      font-size: 0.95rem;
+      color: var(--gray);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-hint {
+      font-size: 0.8rem;
+      color: #9E9E9E;
+    }
+
+    .preview-images {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .preview-image {
+      width: 80px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      position: relative;
+    }
+
+    .remove-image {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      width: 24px;
+      height: 24px;
+      background: var(--error);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    /* Time Picker */
+    .time-picker {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .time-input {
+      flex: 1;
+    }
+
+    /* Success Message */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--success);
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(76, 175, 80, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transform: translateX(150%);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      z-index: 2000;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-group.full-width {
+        grid-column: span 1;
+      }
+
+      .food-type-selector {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .topbar {
+        padding: 1rem;
+      }
+
+      .nav {
+        gap: 1rem;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+
+    /* Basic Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #f7f7f7;
+  color: #333;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap; /* allow items to stack on smaller screens */
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  flex: 0 0 250px; /* fixed width on larger screens */
+  background: #fff;
+  padding: 20px;
+  border-right: 1px solid #ddd;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  margin: 10px 0;
+  text-decoration: none;
+  color: #333;
+}
+
+/* Video */
+video {
+  max-width: 100%;
+  height: auto;
+  margin: 20px;
+  border-radius: 10px;
+  flex: 1 1 300px; /* grow and shrink */
+}
+
+/* Main content */
+main {
+  flex: 1;
+  padding: 20px;
+  min-width: 300px;
+}
+
+.form-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+/* Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1; /* span all columns */
+}
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Food type selector */
+.food-type-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.food-type {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.food-type.selected {
+  background: #ffd700; /* gold highlight */
+  border-color: #ffc107;
+}
+
+/* Image upload */
+.image-upload {
+  border: 2px dashed #ccc;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.preview-images img {
+  max-width: 100px;
+  margin: 5px;
+  border-radius: 6px;
+}
+
+/* Responsive */
+/* Container *//* Container */
+.container {
+  display: flex;
+  min-height: 100vh;
+  gap: 20px;
+  padding: 20px;
+}
+
+/* Sidebar - left */
+.sidebar {
+  flex: 0 0 250px; /* fixed width */
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  border-right: 1px solid #ddd;
+}
+
+/* Right content - video + form */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Video styling */
+video {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* Form card */
+.form-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+/* Form grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* Food type selector */
+.food-type-selector {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 992px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
+}
+/* Main container: video + form */
+.container.Display {
+  display: flex;
+  gap: 20px;
+  padding: 0px;
+  flex-wrap: wrap; /* for smaller screens */
+}
+
+/* Video section */
+.left-section {
+  flex: 0 0 30%; /* 40% width for video */
+}
+
+.left-section video {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+
+      
+}
+
+/* Form section */
+.right-section {
+  flex: 1; /* remaining width */
+}
+
+/* Form card styling */
+.form-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 992px) {
+  .container.Display {
+    flex-direction: column;
+  }
+
+ 
+  .right-section {
+    flex: 1 1 100%;
+  }
+
+  .form-card {
+    margin-top: 20px;
+  }
+}
+.fancy-btn {
+  position: relative;
+  display: inline-block;
+  padding: 14px 28px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Shine effect */
+.fancy-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg, 
+    rgba(255, 255, 255, 0.6) 0%, 
+    rgba(255, 255, 255, 0) 80%
+  );
+  transition: all 0.6s ease;
+}
+
+/* Hover animations */
+.fancy-btn:hover {
+  transform: translateY(-4px) scale(1.03);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.25);
+}
+
+.fancy-btn:hover::before {
+  left: 100%;
+  position:sticky;
+  top:0;
+}
+
+/* Click (active) effect */
+.fancy-btn:active {
+  transform: scale(0.96);
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 1.5px;
+  padding-left: 26px;
+  padding-top: 0px;
+
+  /* Rich gold gradient with contrast */
+  background: linear-gradient(
+    120deg,
+    #b8860b 0%,
+    #d4af37 20%,
+    #c5a028 40%,
+    #ffd700 60%,   /* brighter strike for shine */
+    #a67c00 80%,
+    #b8860b 100%
+  );
+  background-size: 200% auto;  /* allow sliding */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.3),
+    0 2px 2px rgba(0, 0, 0, 0.4);
+
+  transition: background-position 1.2s ease-in-out;
+}
+
+/* Gradient "flow" on hover */
+.logo-text:hover {
+  background-position: right center;
+}
+
+ .topbar {
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-sm);
+       height: 90px;          /* fixed navbar height */
+  padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(124, 255, 107, 0.2);
+    }
+    .logoo {
+  height: 100%;          /* fill navbar height */
+  max-height: 90px;      /* prevent overflow */
+  width: auto;           /* keep proportions */
+}
+
+
+
+
+
+  </style>
+</head>
+<body>
+ <header class="topbar">
+  <div>
+    <h1 class="logo-text">CampusShare</h1>
+  </div>
+
+    <nav class="nav">
+      <a href="index.html" class="text" style="color: white;">Home</a>
+      <a href="availablefood.html" style="color: white;">Available Food</a>
+   
+      <a href="profile.html" id="profileLink">
+        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" class="user-avatar">
+      </a>
+    </nav>
+  </header>
+
+  <div class="container Display">
+    
+
+ <div class="left-section">
+   <video src="scan.mp4" autoplay muted playsinline></video>
+   <!-- Button -->
+    <div>
+      <a href="http://ec2-56-228-18-97.eu-north-1.compute.amazonaws.com:8080/" 
+   target="_blank" 
+   class="fancy-btn" style="margin-left: 15px;">
+   Scan your Food
+</a>
+    </div>
+
+
+</div>
+
+
+
+    <main class="right-section">
+      <div class="form-card animate__animated animate__fadeIn">
+        <div class="form-header">
+          <div>
+            <h1 class="form-title">List Your Surplus Food</h1>
+            <p class="form-subtitle">Help reduce food waste by sharing extra meals with your campus community</p>
+          </div>
+          <div class="form-steps">
+            <div class="step active"></div>
+            <div class="step"></div>
+            <div class="step"></div>
+          </div>
+        </div>
+
+        <form id="surplusForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="provider" class="form-label">Provider Name <span>(required)</span></label>
+              <input type="text" id="provider" class="form-input" placeholder="e.g., Canteen A, Dining Hall B" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="foodItem" class="form-label">Food Item <span>(required)</span></label>
+              <input type="text" id="foodItem" class="form-input" placeholder="e.g., Chicken Biryani, Veg Pulao" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="quantity" class="form-label">Available Quantity <span>(required)</span></label>
+              <div class="time-picker">
+                <input type="number" id="quantity" class="form-input time-input" min="1" placeholder="5" required>
+                <span>servings</span>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="freshness" class="form-label">Freshness Window <span>(required)</span></label>
+              <select id="freshness" class="form-select" required>
+                <option value="2" selected>Safe for 2 hours</option>
+                <option value="4">Safe for 4 hours</option>
+                <option value="6">Safe for 6 hours</option>
+                <option value="8">Safe for 8 hours (refrigerated)</option>
+              </select>
+            </div>
+            
+            <div class="form-group full-width">
+              <label class="form-label">Food Type</label>
+              <div class="food-type-selector">
+                <div class="food-type" data-type="Vegetarian">
+                  <svg class="food-type-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 9H9.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 9H15.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="food-type-name">Vegetarian</span>
+                </div>
+                <div class="food-type selected" data-type="Non-Veg">
+                  <svg class="food-type-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16 16C16 16 14 14 12 14C10 14 8 16 8 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 9H9.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 9H15.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="food-type-name">Non-Veg</span>
+                </div>
+                <div class="food-type" data-type="Vegan">
+                  <svg class="food-type-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7 2H17M5 6H19C20.1046 6 21 6.89543 21 8V9C21 10.1046 20.1046 11 19 11H5C3.89543 11 3 10.1046 3 9V8C3 6.89543 3.89543 6 5 6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 11V21M8 21H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="food-type-name">Vegan</span>
+                </div>
+                <div class="food-type" data-type="Dessert">
+                  <svg class="food-type-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 14C8 14 9.5 16 12 16C14.5 16 16 14 16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15 9H15.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 9H9.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span class="food-type-name">Dessert</span>
+                </div>
+              </div>
+            </div>
+            
+           <div class="form-group full-width">
+  <label class="form-label">Add Photo</label>
+  <div class="image-upload">
+    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M16 5L21 5M21 5V10M21 5L16 10M10 14L7 17M10 14L13 17M10 14L7 11M10 14L13 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <p class="upload-text">Drag & drop a food photo here, or click to browse</p>
+    <p class="upload-hint">JPEG or PNG, max 5MB</p>
+    <input type="file" id="foodImages" name="image" accept="image/*" style="display: none;">
+  </div>
+  <div class="preview-images" id="previewContainer"></div>
+</div>
+
+            
+            <div class="form-group">
+              <label for="location" class="form-label">Pickup Location <span>(required)</span></label>
+              <input type="text" id="location" class="form-input" placeholder="e.g., Block C canteen gate" required>
+            </div>
+            
+            <div class="form-group">
+              <label for="contact" class="form-label">Contact Number</label>
+              <input type="tel" id="contact" class="form-input" placeholder="Optional phone for pickup">
+            </div>
+            
+            <div class="form-group full-width">
+              <label for="notes" class="form-label">Additional Notes</label>
+              <textarea id="notes" class="form-textarea" placeholder="Packaging details, allergens, special instructions..."></textarea>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 13L9 17L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Publish Listing
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="successToast">
+    <svg class="toast-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+    <span>Your listing has been published successfully!</span>
+  </div>
+
+  <div id="authButtons">
+    <a href="login.html" class="btn btn-primary">Login</a>
+    <a href="register.html" class="btn btn-secondary">Register</a>
+  </div>
+  <script>
+document.getElementById('surplusForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+        alert('Please login first');
+        return;
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = `Publishing...`;
+    submitBtn.disabled = true;
+
+    const title = document.getElementById('foodItem').value;
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const freshness = parseInt(document.getElementById('freshness').value);
+    const type = document.querySelector('.food-type.selected').dataset.type;
+    const freshnessStatus = document.getElementById('freshness').options[document.getElementById('freshness').selectedIndex].text;
+    const location = document.getElementById('location').value;
+    const provider = document.getElementById('provider').value;
+    const notes = document.getElementById('notes').value;
+    const contact = document.getElementById('contact').value;
+
+    const expiryTime = new Date();
+    expiryTime.setHours(expiryTime.getHours() + freshness);
+
+    // Create FormData instead of JSON
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('type', type);
+    formData.append('quantity', quantity);
+    formData.append('freshnessStatus', freshnessStatus);
+    formData.append('location', location);
+    formData.append('expiryTime', expiryTime.toISOString());
+    formData.append('provider', provider);
+    formData.append('notes', notes);
+    formData.append('contact', contact);
+
+    // Add image file(s)
+    const imageInput = document.getElementById('foodImages');
+    for (let i = 0; i < imageInput.files.length; i++) {
+        formData.append('images', imageInput.files[i]); // "images" should match your backend field name
+    }
+
+    try {
+        const res = await fetch('/api/food/addfood', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}` // No Content-Type header for FormData
+            },
+            body: formData
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+            const toast = document.getElementById('successToast');
+            toast.classList.add('show');
+            document.getElementById('surplusForm').reset();
+            document.getElementById('previewContainer').innerHTML = '';
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        } else {
+            alert('Error: ' + (data.message || 'Could not add food'));
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Something went wrong');
+    } finally {
+        submitBtn.innerHTML = `Publish Listing`;
+        submitBtn.disabled = false;
+    }
+});
+
+  // Image upload preview
+  document.querySelector('.image-upload').addEventListener('click', function() {
+      document.getElementById('foodImages').click();
+  });
+
+  document.getElementById('foodImages').addEventListener('change', function(e) {
+      const files = e.target.files;
+      const previewContainer = document.getElementById('previewContainer');
+      
+      for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          if (!file.type.match('image.*')) continue;
+          
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              const previewDiv = document.createElement('div');
+              previewDiv.style.position = 'relative';
+              previewDiv.style.display = 'inline-block';
+              
+              const img = document.createElement('img');
+              img.src = e.target.result;
+              img.className = 'preview-image';
+              
+              const removeBtn = document.createElement('span');
+              removeBtn.className = 'remove-image';
+              removeBtn.innerHTML = '×';
+              removeBtn.addEventListener('click', function() {
+                  previewDiv.remove();
+              });
+              
+              previewDiv.appendChild(img);
+              previewDiv.appendChild(removeBtn);
+              previewContainer.appendChild(previewDiv);
+          }
+          reader.readAsDataURL(file);
+      }
+  });
+
+  // Food type selection
+  document.querySelectorAll('.food-type').forEach(type => {
+      type.addEventListener('click', function() {
+          document.querySelectorAll('.food-type').forEach(t => t.classList.remove('selected'));
+          this.classList.add('selected');
+      });
+  });
+   // Check if the user is logged in
+   const token = localStorage.getItem('token');
+    const authButtonsDiv = document.getElementById('authButtons');
+    const profileLink = document.getElementById('profileLink');
+
+    if (token) {
+        // User is logged in
+        authButtonsDiv.style.display = 'none'; // Hide login/register buttons
+
+        // Add logout button
+        const logoutButton = document.createElement('button');
+        logoutButton.textContent = 'Logout';
+        logoutButton.className = 'btn btn-secondary';
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html'; // Redirect to home page after logout
+        });
+        profileLink.parentNode.insertBefore(logoutButton, profileLink.nextSibling);
+
+    } else {
+        // User is not logged in
+        profileLink.style.display = 'none'; // Hide profile link
+        authButtonsDiv.style.display = 'block'; // Show login/register buttons
+    }
+
+  </script>
+</body>
+</html> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

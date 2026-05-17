@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusShare — Available Food</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <style>
+    :root {
+      --primary: #2e7d32; /* Deep green */
+      --primary-light: #81c784; /* Light green */
+      --secondary: #a5d6a7; /* Pale green */
+      --accent: #ffb74d; /* Complementary orange */
+      --dark: #263238; /* Dark blue-gray */
+      --light: #f1f8e9; /* Lightest green */
+      --success: #388e3c; /* Success green */
+      --warning: #f57c00; /* Warning orange */
+      --error: #d32f2f; /* Error red */
+      --shadow: 0 10px 30px rgba(46, 125, 50, 0.1);
+      --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    /* Animated leaf background elements */
+    .leaf-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+    }
+    
+    .leaf {
+      position: absolute;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%23a5d6a7" d="M50 0 Q70 20 50 40 Q30 20 50 0" opacity="0.7"/></svg>');
+      background-size: contain;
+      background-repeat: no-repeat;
+      animation: float linear infinite;
+      opacity: 0.6;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg);
+      }
+    }
+    
+    .topbar {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 1px solid rgba(46, 125, 50, 0.1);
+    }
+    
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      transition: var(--transition);
+    }
+    
+    .brand:hover {
+      transform: scale(1.05);
+    }
+    
+    .brand::before {
+      content: "🌱";
+      margin-right: 0.5rem;
+      font-size: 1.8rem;
+    }
+    
+    .nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    
+    .nav a {
+      color: var(--dark);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    
+    .nav a:hover {
+      color: var(--primary);
+    }
+    
+    .nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: var(--transition);
+    }
+    
+    .nav a:hover::after {
+      width: 100%;
+    }
+    
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 50px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 6px rgba(46, 125, 50, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .btn:hover {
+      background: #1b5e20;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(46, 125, 50, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 200%;
+      height: 200%;
+      background: rgba(255, 255, 255, 0.15);
+      transform: rotate(30deg);
+      transition: var(--transition);
+    }
+    
+    .btn:hover::after {
+      left: 100%;
+    }
+    
+    .btn.small {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(5px);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(46, 125, 50, 0.1);
+      transition: var(--transition);
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(46, 125, 50, 0.15);
+    }
+    
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+      color: var(--dark);
+      position: relative;
+      padding-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 60px;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+    
+    .row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    input[type="search"], select {
+      padding: 0.9rem 1.2rem;
+      border: 1px solid #c8e6c9;
+      border-radius: 50px;
+      font-size: 1rem;
+      transition: var(--transition);
+      flex: 1;
+      min-width: 250px;
+      background: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+    
+    input[type="search"]:focus, select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+      background: white;
+    }
+    
+    input[type="search"] {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%232e7d32' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: 15px center;
+      background-size: 20px;
+      padding-left: 45px;
+    }
+    
+    .list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .list-item {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      padding: 1.5rem;
+      transition: var(--transition);
+      border: 1px solid rgba(46, 125, 50, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      position: relative;
+      overflow: hidden;
+      transform: translateY(20px);
+      opacity: 0;
+      animation: fadeInUp 0.5s forwards;
+    }
+    
+    @keyframes fadeInUp {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .list-item:hover {
+      transform: translateY(-5px) !important;
+      box-shadow: 0 10px 25px rgba(46, 125, 50, 0.15);
+    }
+    
+    .list-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .list-item-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    
+    .list-item-quantity {
+      background: var(--primary);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 2px 5px rgba(46, 125, 50, 0.3);
+    }
+    
+    .list-item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: #555;
+    }
+    
+    .list-item-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    
+    .list-item p {
+      color: #555;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    
+    .list-item-actions {
+      margin-top: auto;
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .expiry-indicator {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 6px;
+      height: 100%;
+      transition: var(--transition);
+    }
+    
+    .ai-suggestion {
+      background: rgba(169, 223, 171, 0.2);
+      border-left: 4px solid var(--primary);
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.9rem;
+      display: flex;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+    
+    .ai-suggestion:hover {
+      background: rgba(169, 223, 171, 0.3);
+    }
+    
+    .ai-suggestion i {
+      color: var(--primary);
+      font-size: 1.2rem;
+    }
+    
+    .ai-suggestion-content {
+      flex: 1;
+    }
+    
+    .ai-suggestion h4 {
+      margin-bottom: 0.5rem;
+      color: var(--dark);
+      font-size: 0.95rem;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      grid-column: 1 / -1;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      color: var(--primary-light);
+      margin-bottom: 1rem;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .empty-state h3 {
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+    
+    .empty-state p {
+      color: #666;
+      margin-bottom: 1rem;
+    }
+    
+    .food-image {
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .food-image::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.2));
+    }
+    
+    .carbon-impact {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      background: rgba(46, 125, 50, 0.9);
+      color: white;
+      padding: 0.3rem 0.6rem;
+      border-radius: 50px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      z-index: 1;
+    }
+    
+    @media (max-width: 768px) {
+      .topbar {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+      }
+      
+      .nav {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      
+      .container {
+        padding: 0 1rem;
+      }
+      
+      .list {
+        grid-template-columns: 1fr;
+      }
+      
+      input[type="search"], select {
+        width: 100%;
+      }
+    }
+    
+    /* AI generated food images */
+    .food-image[data-food-type="pizza"] {
+      background-image: url('https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80');
+    }
+    
+    .food-image[data-food-type="sandwich"] {
+      background-image: url('https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80');
+    }
+    
+    .food-image[data-food-type="salad"] {
+      background-image: url('https://images.unsplash.com/photo-1546793665-c74683f339c1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80');
+    }
+    
+    .food-image[data-food-type="pasta"] {
+      background-image: url('https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80');
+    }
+    
+    .food-image[data-food-type="dessert"] {
+      background-image: url('https://images.unsplash.com/photo-1551024506-0bccd828d307?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80');
+    }
+    
+    .food-image[data-food-type="default"] {
+      background-image: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=600&q=80');
+    }
+    
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      padding: 15px 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(150%);
+      transition: var(--transition);
+      z-index: 1000;
+      max-width: 350px;
+    }
+    
+    .toast.show {
+      transform: translateX(0);
+    }
+    
+    .toast.success {
+      border-left: 4px solid var(--success);
+    }
+    
+    .toast.error {
+      border-left: 4px solid var(--error);
+    }
+    
+    .toast i {
+      font-size: 1.2rem;
+    }
+    
+    .toast.success i {
+      color: var(--success);
+    }
+    
+    .toast.error i {
+      color: var(--error);
+    }
+    
+    /* Loading animation */
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .loading-shimmer {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+      color: transparent;
+    }
+    
+    /* Header & Navigation */
+    .topbar {
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-sm);
+       height: 90px;          /* fixed navbar height */
+  padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(124, 255, 107, 0.2);
+    }
+    .logoo {
+  height: 100%;          /* fill navbar height */
+  max-height: 90px;      /* prevent overflow */
+  width: auto;           /* keep proportions */
+}
+
+.logo-text {
+  font-size: 28px;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 1.5px;
+  padding-left: 26px;
+  padding-top: 0px;
+
+  /* Rich gold gradient with contrast */
+  background: linear-gradient(
+    120deg,
+    #b8860b 0%,
+    #d4af37 20%,
+    #c5a028 40%,
+    #ffd700 60%,   /* brighter strike for shine */
+    #a67c00 80%,
+    #b8860b 100%
+  );
+  background-size: 200% auto;  /* allow sliding */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.3),
+    0 2px 2px rgba(0, 0, 0, 0.4);
+
+  transition: background-position 1.2s ease-in-out;
+}
+
+/* Gradient "flow" on hover */
+.logo-text:hover {
+  background-position: right center;
+}
+
+  </style>
+</head>
+<body>
+  <div class="leaf-bg" id="leafBg"></div>
+
+ <header class="topbar">
+  <div>
+    <h1 class="logo-text">CampusShare</h1>
+  </div>
+
+    <nav class="nav">
+      <a href="index.html" style="color: white;"><i class="fas fa-home"></i> Home</a>
+      <a href="addsurplus.html" style="color: white;"><i class="fas fa-plus-circle"></i> Add Surplus</a>
+      <a href="impact.html" style="color: white;"><i class="fas fa-chart-line" ></i> Impact</a>
+      <a href="profile.html" class="btn small"><i class="fas fa-user"></i> Profile</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card animate__animated animate__fadeIn">
+      <h2><i class="fas fa-utensils"></i> Available Listings</h2>
+      <div class="filters row">
+        <input type="search" placeholder="Search by item or location...">
+        <select>
+          <option value="">All Listings</option>
+          <option value="2">⚠️ Urgent (2hrs left)</option>
+          <option value="4">⏳ Soon (4hrs left)</option>
+          <option value="ai">🤖 AI Recommended</option>
+          <option value="veg">🌱 Vegetarian</option>
+        </select>
+      </div>
+
+      <ul id="listingItems" class="list">
+        <li class="empty-state">
+          <i class="fas fa-leaf"></i>
+          <h3>Finding available food...</h3>
+          <p>We're connecting to campus networks to locate surplus food</p>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+
+    window.reserveFood = function(food) {
+  // save food to localStorage
+  localStorage.setItem("reservedFood", JSON.stringify(food));
+  // redirect to detail page
+  window.location.href = "food-detail.html";
+}
+
+  // Create floating leaves
+  const leafBg = document.getElementById('leafBg');
+  for (let i = 0; i < 15; i++) {
+    const leaf = document.createElement('div');
+    leaf.classList.add('leaf');
+    
+    // Random size between 20px and 60px
+    const size = Math.random() * 40 + 20;
+    leaf.style.width = `${size}px`;
+    leaf.style.height = `${size}px`;
+    
+    // Random position
+    leaf.style.left = `${Math.random() * 100}%`;
+    
+    // Random animation duration between 20s and 40s
+    leaf.style.animationDuration = `${Math.random() * 20 + 20}s`;
+    
+    // Random delay
+    leaf.style.animationDelay = `${Math.random() * 5}s`;
+    
+    // Random rotation
+    leaf.style.transform = `rotate(${Math.random() * 360}deg)`;
+    
+    leafBg.appendChild(leaf);
+  }
+
+  
+
+  // AI-powered food analysis
+  class FoodAI {
+    static detectFoodType(title) {
+      const lcTitle = title.toLowerCase();
+      if (lcTitle.includes('pizza')) return 'pizza';
+      if (lcTitle.includes('sandwich') || lcTitle.includes('burger') || lcTitle.includes('wrap')) return 'sandwich';
+      if (lcTitle.includes('salad') || lcTitle.includes('vegetable')) return 'salad';
+      if (lcTitle.includes('pasta') || lcTitle.includes('noodle') || lcTitle.includes('rice')) return 'pasta';
+      if (lcTitle.includes('cake') || lcTitle.includes('dessert') || lcTitle.includes('sweet')) return 'dessert';
+      return 'default';
+    }
+
+    static assessUrgency(expiryTime) {
+      const diff = new Date(expiryTime) - new Date();
+      const hours = diff / (1000 * 60 * 60);
+      
+      if (hours < 1) return { level: 'critical', color: 'var(--error)', icon: '⏰' };
+      if (hours < 2) return { level: 'high', color: 'var(--warning)', icon: '⚠️' };
+      if (hours < 4) return { level: 'medium', color: 'var(--accent)', icon: '⌛' };
+      return { level: 'low', color: 'var(--success)', icon: '✅' };
+    }
+
+    static estimateCarbonSavings(quantity, foodType) {
+      // Average carbon footprint savings per meal (kg CO2)
+      const baseSavings = 1.5;
+      let multiplier = 1;
+      
+      // Adjust based on food type (meat has higher carbon footprint)
+      if (foodType === 'salad') multiplier = 0.7;
+      if (foodType === 'pasta') multiplier = 0.9;
+      if (foodType === 'sandwich') multiplier = 1.2;
+      if (foodType === 'pizza') multiplier = 1.3;
+      
+      return (baseSavings * multiplier * quantity).toFixed(1);
+    }
+
+    static generateSuggestion(food) {
+      const urgency = this.assessUrgency(food.expiryTime);
+      const foodType = this.detectFoodType(food.title);
+      
+      const suggestions = [
+        `This ${food.title.toLowerCase()} would be perfect for ${urgency.level === 'critical' ? 'immediate consumption' : 'your next meal'}!`,
+        `By claiming this, you're saving ~${this.estimateCarbonSavings(food.quantity, foodType)}kg CO2 equivalent.`,
+        `Nutrition tip: ${this.getNutritionTip(foodType)}`,
+        `Popular choice! This item gets reserved ${urgency.level === 'critical' ? 'very quickly' : 'often'}.`,
+        `${this.getPairingSuggestion(foodType)}`
+      ];
+      
+      return suggestions[Math.floor(Math.random() * suggestions.length)];
+    }
+
+    static getNutritionTip(foodType) {
+      const tips = {
+        'pizza': 'Pair with a side salad to balance your meal with vegetables.',
+        'sandwich': 'Add some fresh veggies like lettuce and tomato for extra nutrients.',
+        'salad': 'Include a protein source like beans or nuts to make it more filling.',
+        'pasta': 'Whole grain pasta provides more fiber and nutrients than regular pasta.',
+        'dessert': 'Enjoy in moderation and balance with physical activity.',
+        'default': 'Try to include a variety of food groups for a balanced diet.'
+      };
+      return tips[foodType] || tips['default'];
+    }
+
+    static getPairingSuggestion(foodType) {
+      const pairings = {
+        'pizza': 'Pair with a fresh fruit for dessert to complete your meal.',
+        'sandwich': 'Goes well with a cup of soup or a small salad.',
+        'salad': 'Perfect with a slice of whole grain bread on the side.',
+        'pasta': 'Complement with a glass of water or herbal tea.',
+        'dessert': 'Enjoy with a cup of coffee or tea for a perfect ending.',
+        'default': 'Consider adding a piece of fruit to round out your meal.'
+      };
+      return pairings[foodType] || pairings['default'];
+    }
+
+    static isVegetarian(title, notes) {
+      const text = (title + ' ' + (notes || '')).toLowerCase();
+      const nonVegKeywords = ['chicken', 'meat', 'beef', 'pork', 'fish', 'seafood'];
+      return !nonVegKeywords.some(keyword => text.includes(keyword));
+    }
+  }
+
+// REFACTORED: The main function to handle the reservation
+async function reserveFood(food) {
+  const btn = event.target.closest('.reserve-btn');
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    showErrorToast('Please login to reserve food');
+    setTimeout(() => window.location.href = 'login.html', 1500);
+    return;
+  }
+
+  try {
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reserving...';
+    btn.disabled = true;
+    
+    // Step 1: Call the backend API to claim the food
+    const res = await fetch(`/api/food/${food._id}/claim`, {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+    
+    if (res.ok) {
+      showSuccessToast('Food reserved successfully!');
+      
+      // Step 2: Save the reserved food data to localStorage
+      // This is necessary for the food-detail.html page to access the data
+      localStorage.setItem("reservedFood", JSON.stringify(food));
+      
+      // Step 3: Redirect to the food-detail page
+      setTimeout(() => {
+        window.location.href = "food-detail.html";
+      }, 1000); // Give the user a moment to see the success toast
+    } else {
+      showErrorToast('Reservation failed: ' + (data.message || 'Server error'));
+      btn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Reserve Now';
+      btn.disabled = false;
+    }
+  } catch (err) {
+    console.error("Claim error:", err);
+    showErrorToast('Network error. Please try again.');
+    btn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Reserve Now';
+    btn.disabled = false;
+  }
+}
+
+async function loadFood() {
+  const container = document.getElementById('listingItems');
+
+  try {
+    // Show loading state
+    container.innerHTML = `
+      <li class="empty-state">
+        <i class="fas fa-spinner fa-spin"></i>
+        <h3>Loading available food</h3>
+        <p>Connecting to campus networks...</p>
+      </li>
+    `;
+
+    const res = await fetch('/api/food/getfood');
+    const foods = await res.json();
+
+    if (!foods || foods.length === 0) {
+      container.innerHTML = `
+        <li class="empty-state">
+          <i class="fas fa-utensils"></i>
+          <h3>No food available right now</h3>
+          <p>Check back later or add your own surplus food</p>
+          <a href="addsurplus.html" class="btn" style="margin-top: 1rem;">
+            <i class="fas fa-plus"></i> Add Surplus Food
+          </a>
+        </li>
+      `;
+      return;
+    }
+
+    // AI scoring & additional flags
+    foods.forEach(food => {
+      const urgency = FoodAI.assessUrgency(food.expiryTime);
+      food.aiScore = urgency.level === 'critical' ? 100 : 
+                     urgency.level === 'high' ? 80 :
+                     urgency.level === 'medium' ? 60 : 30;
+      food.aiScore += Math.min(food.quantity * 2, 20);
+      food.isVegetarian = FoodAI.isVegetarian(food.title, food.notes);
+    });
+
+    // Sort by AI score descending
+    foods.sort((a, b) => b.aiScore - a.aiScore);
+
+    container.innerHTML = '';
+
+    foods.forEach((food, index) => {
+      const li = document.createElement('li');
+      li.classList.add('list-item');
+      li.style.animationDelay = `${index * 0.1}s`;
+
+      const urgency = FoodAI.assessUrgency(food.expiryTime);
+      const foodType = FoodAI.detectFoodType(food.title);
+      const suggestion = FoodAI.generateSuggestion(food);
+      const carbonSavings = FoodAI.estimateCarbonSavings(food.quantity, foodType);
+
+      // Use first image if available
+      const foodImage = (food.images && food.images.length > 0) ? `/uploads/${food.images[0]}` : 'placeholder.png';
+
+      li.innerHTML = `
+        <div class="expiry-indicator" style="background: ${urgency.color}"></div>
+        <div class="food-image" style="background-image: url('${foodImage}');" data-food-type="${foodType}">
+          <span class="carbon-impact">
+            <i class="fas fa-leaf"></i> Saves ~${carbonSavings}kg CO2
+          </span>
+        </div>
+        <div class="list-item-header">
+          <h3 class="list-item-title">${food.title}</h3>
+          <span class="list-item-quantity">${food.quantity} ${food.quantity === 1 ? 'plate' : 'plates'}</span>
+        </div>
+        <div class="list-item-meta">
+          <span><i class="fas fa-map-marker-alt"></i> ${food.location}</span>
+          <span><i class="fas fa-clock"></i> ${getHoursLeft(food.expiryTime)}</span>
+          <span><i class="fas fa-user-tie"></i> ${food.provider || 'Campus Dining'}</span>
+          ${food.isVegetarian ? '<span><i class="fas fa-leaf"></i> Vegetarian</span>' : ''}
+        </div>
+        ${food.notes ? `<p><i class="fas fa-sticky-note"></i> ${food.notes}</p>` : ''}
+        <div class="ai-suggestion">
+          <i class="fas fa-robot"></i>
+          <div class="ai-suggestion-content">
+            <h4>Eco Tip</h4>
+            <p>${suggestion}</p>
+          </div>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn small reserve-btn">
+            <i class="fas fa-hand-holding-heart"></i> Reserve Now
+          </button>
+        </div>
+      `;
+
+      container.appendChild(li);
+
+      // Attach event listener safely
+      li.querySelector('.reserve-btn').addEventListener('click', () => reserveFood(food));
+    });
+
+  } catch (error) {
+    console.error("Error loading food:", error);
+    container.innerHTML = `
+      <li class="empty-state">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h3>Error loading listings</h3>
+        <p>Please try again later</p>
+        <button class="btn" onclick="loadFood()" style="margin-top: 1rem;">
+          <i class="fas fa-sync-alt"></i> Retry
+        </button>
+      </li>
+    `;
+  }
+}
+
+// Helper function for expiry
+function getHoursLeft(expiryTime) {
+  const diffMs = new Date(expiryTime) - new Date();
+  if (diffMs <= 0) return "Expired";
+  const hours = Math.floor(diffMs / (1000 * 60 * 60));
+  const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m left`;
+}
+
+  function getHoursLeft(expiryTime) {
+    const diff = new Date(expiryTime) - new Date();
+    const hours = Math.max(0, diff / (1000 * 60 * 60));
+    const minutes = Math.max(0, (diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours < 1) {
+      return `${Math.ceil(minutes)} minutes left`;
+    }
+    return `${hours.toFixed(1)} hours left`;
+  }
+
+  async function claimFood(id, btn) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      showErrorToast('Please login to reserve food');
+      setTimeout(() => window.location.href = 'login.html', 1500);
+      return;
+    }
+
+    try {
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Reserving...';
+      btn.disabled = true;
+      
+      const res = await fetch(`/api/food/${id}/claim`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showSuccessToast('Food reserved successfully!');
+        // Animate the claimed item
+        const item = btn.closest('.list-item');
+        item.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          item.style.transition = 'all 0.3s ease';
+          item.style.opacity = '0';
+          item.style.height = '0';
+          item.style.padding = '0';
+          item.style.margin = '0';
+          item.style.border = 'none';
+          setTimeout(() => item.remove(), 300);
+        }, 1000);
+      } else {
+        showErrorToast('Reservation failed: ' + (data.message || 'Server error'));
+        btn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Reserve Now';
+        btn.disabled = false;
+      }
+    } catch (err) {
+      console.error("Claim error:", err);
+      showErrorToast('Network error. Please try again.');
+      btn.innerHTML = '<i class="fas fa-hand-holding-heart"></i> Reserve Now';
+      btn.disabled = false;
+    }
+  }
+
+  function showSuccessToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast success';
+    toast.innerHTML = `
+      <i class="fas fa-check-circle"></i>
+      <span>${message}</span>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+  }
+
+  function showErrorToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast error';
+    toast.innerHTML = `
+      <i class="fas fa-exclamation-circle"></i>
+      <span>${message}</span>
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 10);
+    
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+  }
+
+  // search & filter
+  document.addEventListener('DOMContentLoaded', () => {
+    loadFood();
+
+    const searchInput = document.querySelector('input[type="search"]');
+    searchInput.addEventListener('input', function() {
+      const searchTerm = this.value.toLowerCase();
+      document.querySelectorAll('.list-item').forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(searchTerm) ? '' : 'none';
+      });
+    });
+
+    const filterSelect = document.querySelector('select');
+    filterSelect.addEventListener('change', function() {
+      const filterValue = this.value;
+      document.querySelectorAll('.list-item').forEach(item => {
+        if (!filterValue) {
+          item.style.display = '';
+          return;
+        }
+
+        if (filterValue === 'ai') {
+          // Show only AI recommended items (top 30% by score)
+          const index = Array.from(item.parentNode.children).indexOf(item);
+          item.style.display = index < Math.floor(item.parentNode.children.length * 0.3) ? '' : 'none';
+          return;
+        }
+
+        if (filterValue === 'veg') {
+          // Show only vegetarian items
+          const isVeg = item.querySelector('.fa-leaf') !== null;
+          item.style.display = isVeg ? '' : 'none';
+          return;
+        }
+
+        const timeText = item.querySelector('.list-item-meta span:nth-child(2)').textContent;
+        const hoursMatch = timeText.match(/[\d.]+/);
+        if (!hoursMatch) {
+          item.style.display = 'none';
+          return;
+        }
+        
+        const hoursLeft = parseFloat(hoursMatch[0]);
+        
+        if (filterValue === '2' && hoursLeft <= 2) {
+          item.style.display = '';
+        } else if (filterValue === '4' && hoursLeft <= 4) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+  </script>
+</body>
+</html>

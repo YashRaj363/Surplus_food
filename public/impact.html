@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusShare — Impact Dashboard</title>
+  <style>
+    /* Complete CSS for Impact Dashboard */
+    :root {
+      --primary: #4CAF50; /* Green */
+      --primary-dark: #388E3C;
+      --secondary: #FF9800; /* Orange */
+      --accent: #2196F3; /* Blue */
+      --light: #F5F5F5;
+      --dark: #333333;
+      --text: #424242;
+      --gray: #e0e0e0;
+      --gray-dark: #b0b0b0;
+      
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+    }
+    
+    body {
+      background-color: #f9f9f9;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    /* Header Styles */
+    .topbar {
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-sm);
+       height: 90px;          /* fixed navbar height */
+  padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(124, 255, 107, 0.2);
+    }
+    .logoo {
+  height: 100%;          /* fill navbar height */
+  max-height: 90px;      /* prevent overflow */
+  width: auto;           /* keep proportions */
+}
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+    }
+    
+    .brand::before {
+      content: "♻️";
+      margin-right: 0.5rem;
+      font-size: 1.2em;
+    }
+    
+    .nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    
+    .nav a {
+      color: var(--dark);
+      font-weight: 500;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    
+    .nav a:hover {
+      color: var(--primary);
+    }
+    
+    .nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: var(--transition);
+    }
+    
+    .nav a:hover::after {
+      width: 100%;
+    }
+    
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+    }
+    
+    .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn.small {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+    
+    /* Main Content */
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem 0;
+    }
+    
+    .card {
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-top: 5px solid var(--primary);
+    }
+    
+    .card h2 {
+      color: var(--primary-dark);
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    .card h2::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 80px;
+      height: 3px;
+      background: var(--secondary);
+      border-radius: 3px;
+    }
+    
+    .card h3 {
+      color: var(--primary-dark);
+      margin: 2rem 0 1.5rem;
+      font-size: 1.4rem;
+    }
+    
+    /* Stats Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .card.stat {
+      text-align: center;
+      padding: 1.5rem;
+      background-color: rgba(76, 175, 80, 0.05);
+      border-top: 5px solid var(--accent);
+      transition: var(--transition);
+    }
+    
+    .card.stat:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    
+    .card.stat h3 {
+      font-size: 2.5rem;
+      margin: 0.5rem 0;
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+    
+    .card.stat p {
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+    
+    /* Chart Placeholder */
+    .chart-placeholder {
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(76, 175, 80, 0.03);
+      border: 2px dashed var(--gray);
+      color: var(--gray-dark);
+      margin: 1.5rem 0;
+    }
+    
+    /* Impact Visualization */
+    .impact-visual {
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--gray);
+    }
+    
+    .impact-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    
+    .impact-icon {
+      font-size: 2rem;
+      margin-right: 1rem;
+      color: var(--primary);
+    }
+    
+    .impact-text {
+      flex: 1;
+    }
+    
+    .impact-text h4 {
+      margin-bottom: 0.5rem;
+      color: var(--primary-dark);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .topbar {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      
+      .nav {
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+      
+      .cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .card {
+        padding: 1.5rem;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        width: 95%;
+      }
+      
+      .card.stat h3 {
+        font-size: 2rem;
+      }
+    }
+    
+    /* Animations */
+    @keyframes countUp {
+      from { 
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to { 
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .count-up {
+      animation: countUp 1s ease-out forwards;
+    }
+
+    .logo-text {
+  font-size: 28px;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 1.5px;
+  padding-left: 26px;
+  padding-top: 0px;
+
+  /* Rich gold gradient with contrast */
+  background: linear-gradient(
+    120deg,
+    #b8860b 0%,
+    #d4af37 20%,
+    #c5a028 40%,
+    #ffd700 60%,   /* brighter strike for shine */
+    #a67c00 80%,
+    #b8860b 100%
+  );
+  background-size: 200% auto;  /* allow sliding */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.3),
+    0 2px 2px rgba(0, 0, 0, 0.4);
+
+  transition: background-position 1.2s ease-in-out;
+}
+
+/* Gradient "flow" on hover */
+.logo-text:hover {
+  background-position: right center;
+}
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+      <div>
+    <h1 class="logo-text">CampusShare</h1>
+  </div>
+ 
+    <nav class="nav">
+      <a href="index.html" style="color: white;">Home</a>
+      <a href="admin.html"  style="color: white;">Admin</a>
+      <a href="profile.html" class="btn small"  style="color: white;">Profile</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Impact Summary</h2>
+      <div class="cards">
+        <div class="card stat">
+          <h3 id="dashPlates">1,243</h3>
+          <p>Plates Saved</p>
+        </div>
+        <div class="card stat">
+          <h3 id="dashPeople">872</h3>
+          <p>People Served</p>
+        </div>
+        <div class="card stat">
+          <h3 id="dashWater">2,840 L</h3>
+          <p>Water Saved</p>
+        </div>
+        <div class="card stat">
+          <h3 id="dashCO2">543 kg</h3>
+          <p>CO₂ Reduced</p>
+        </div>
+      </div>
+
+      <h3>Monthly Trend</h3>
+      <div class="chart-placeholder card">
+        <!-- In a real app, this would be replaced with a chart from Chart.js, Recharts, etc. -->
+        <div style="text-align: center; padding: 2rem;">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">📈</div>
+          <p>Visualization of monthly impact metrics</p>
+          <p><small>Would show plates saved, people served, and environmental impact over time</small></p>
+        </div>
+      </div>
+      
+      <div class="impact-visual">
+        <h3>Your Impact in Perspective</h3>
+        <div class="impact-item">
+          <div class="impact-icon">💧</div>
+          <div class="impact-text">
+            <h4>Water Saved</h4>
+            <p>2,840 liters is enough to provide clean drinking water for 5 people for a year.</p>
+          </div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-icon">🌱</div>
+          <div class="impact-text">
+            <h4>Carbon Footprint</h4>
+            <p>543 kg CO₂ reduction is equivalent to planting 13 mature trees.</p>
+          </div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-icon">🍽️</div>
+          <div class="impact-text">
+            <h4>Meals Provided</h4>
+            <p>872 meals served could feed a classroom of students for 2 weeks.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Sample JavaScript for impact dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animate the stats counting up
+      function animateValue(id, start, end, duration, suffix = '') {
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const value = Math.floor(progress * (end - start) + start);
+          obj.innerHTML = value.toLocaleString() + suffix;
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          } else {
+            obj.classList.add('count-up');
+          }
+        };
+        window.requestAnimationFrame(step);
+      }
+      
+      // Start animations with sample data
+      setTimeout(() => {
+        animateValue('dashPlates', 0, 1243, 2000);
+        animateValue('dashPeople', 0, 872, 2000);
+        animateValue('dashWater', 0, 2840, 2000, ' L');
+        animateValue('dashCO2', 0, 543, 2000, ' kg');
+      }, 500);
+      
+      // In a real app, you would fetch this data from an API
+      const impactData = {
+        plates: 1243,
+        people: 872,
+        water: 2840,
+        co2: 543
+      };
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CampusShare — College Events Calendar</title>
+  <style>
+    /* Complete CSS for College Events Calendar */
+    :root {
+      --primary: #4CAF50; /* Green */
+      --primary-dark: #388E3C;
+      --secondary: #FF9800; /* Orange */
+      --accent: #2196F3; /* Blue */
+      --light: #F5F5F5;
+      --dark: #333333;
+      --text: #424242;
+      --gray: #e0e0e0;
+      --gray-dark: #b0b0b0;
+      
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', sans-serif;
+    }
+    
+    body {
+      background-color: #f9f9f9;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    /* Header Styles */
+    .topbar {
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+    }
+    
+    .brand::before {
+      content: "♻️";
+      margin-right: 0.5rem;
+      font-size: 1.2em;
+    }
+    
+    .nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    
+    .nav a {
+      color: var(--dark);
+      font-weight: 500;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    
+    .nav a:hover {
+      color: var(--primary);
+    }
+    
+    .nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background-color: var(--primary);
+      transition: var(--transition);
+    }
+    
+    .nav a:hover::after {
+      width: 100%;
+    }
+    
+    /* Main Content */
+    .container {
+      width: 90%;
+      max-width: 1000px;
+      margin: 2rem auto;
+      padding: 1rem 0;
+    }
+    
+    .card {
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-top: 5px solid var(--primary);
+    }
+    
+    .card h2 {
+      color: var(--primary-dark);
+      margin-bottom: 1.5rem;
+      font-size: 1.8rem;
+      position: relative;
+      padding-bottom: 10px;
+    }
+    
+    .card h2::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 80px;
+      height: 3px;
+      background: var(--secondary);
+      border-radius: 3px;
+    }
+    
+    /* Calendar Sync Header */
+    .sync-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    /* Filter Controls */
+    .filters {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    
+    .filters select, .filters input {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--gray);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+    }
+    
+    .filters select {
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 15px;
+      appearance: none;
+      min-width: 180px;
+    }
+    
+    /* Events List */
+    .events-list {
+      display: grid;
+      gap: 1rem;
+    }
+    
+    .event-card {
+      padding: 1.5rem;
+      border-radius: var(--radius-sm);
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-left: 4px solid var(--secondary);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .event-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+    
+    .event-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .event-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-right: 1rem;
+    }
+    
+    .event-date {
+      background-color: rgba(76, 175, 80, 0.1);
+      color: var(--primary-dark);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    
+    .event-details {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+    
+    .event-details span {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .event-description {
+      color: var(--text);
+      margin-top: 0.5rem;
+    }
+    
+    .event-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    
+    .btn:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    .btn.sync {
+      background-color: var(--accent);
+    }
+    
+    .btn.sync:hover {
+      background-color: #1976D2;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .topbar {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      
+      .nav {
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+      
+      .card {
+        padding: 1.5rem;
+      }
+      
+      .sync-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .filters {
+        flex-direction: column;
+      }
+      
+      .filters select, .filters input {
+        width: 100%;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        width: 95%;
+      }
+      
+      .event-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .event-details {
+        gap: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">CampusShare</div>
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="admin_dashboard.html">Admin</a>
+      <a href="profile.html" class="btn small">Profile</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="sync-header">
+        <h2>College Events Calendar</h2>
+        <button class="btn sync">Sync All Events</button>
+      </div>
+      
+      <div class="filters">
+        <select id="departmentFilter">
+          <option value="">All Departments</option>
+          <option value="academic">Academic</option>
+          <option value="cultural">Cultural</option>
+          <option value="sports">Sports</option>
+          <option value="other">Other</option>
+        </select>
+        <select id="monthFilter">
+          <option value="">All Months</option>
+          <option value="jan">January</option>
+          <option value="feb">February</option>
+          <option value="mar">March</option>
+          <option value="apr">April</option>
+          <option value="may">May</option>
+          <option value="jun">June</option>
+          <option value="jul">July</option>
+          <option value="aug">August</option>
+          <option value="sep">September</option>
+          <option value="oct">October</option>
+          <option value="nov">November</option>
+          <option value="dec">December</option>
+        </select>
+        <input type="text" id="searchInput" placeholder="Search events...">
+      </div>
+      
+      <div class="events-list">
+        <!-- Event 1 -->
+        <div class="event-card" data-department="academic" data-month="aug">
+          <div class="event-header">
+            <h3 class="event-title">Orientation Week</h3>
+            <span class="event-date">Aug 15-19, 2023</span>
+          </div>
+          <div class="event-details">
+            <span>🏛️ <i>Main Auditorium</i></span>
+            <span>🕘 <i>9:00 AM - 4:00 PM</i></span>
+            <span>👥 <i>All Students</i></span>
+          </div>
+          <p class="event-description">
+            Welcome event for new students with campus tours, department introductions, 
+            and social activities. Expect large food surplus from catering.
+          </p>
+          <div class="event-actions">
+            <button class="btn">Sync to CampusShare</button>
+          </div>
+        </div>
+        
+        <!-- Event 2 -->
+        <div class="event-card" data-department="academic" data-month="sep">
+          <div class="event-header">
+            <h3 class="event-title">TechFest 2023</h3>
+            <span class="event-date">Sept 2-4, 2023</span>
+          </div>
+          <div class="event-details">
+            <span>🏛️ <i>Engineering Block</i></span>
+            <span>🕘 <i>10:00 AM - 6:00 PM</i></span>
+            <span>👥 <i>Computer Science Dept.</i></span>
+          </div>
+          <p class="event-description">
+            Annual technology festival with workshops, competitions, and guest speakers. 
+            Multiple food vendors expected with potential leftovers.
+          </p>
+          <div class="event-actions">
+            <button class="btn">Sync to CampusShare</button>
+          </div>
+        </div>
+        
+        <!-- Event 3 -->
+        <div class="event-card" data-department="sports" data-month="sep">
+          <div class="event-header">
+            <h3 class="event-title">Sports Day</h3>
+            <span class="event-date">Sept 15, 2023</span>
+          </div>
+          <div class="event-details">
+            <span>🏛️ <i>Sports Complex</i></span>
+            <span>🕘 <i>8:00 AM - 5:00 PM</i></span>
+            <span>👥 <i>All Departments</i></span>
+          </div>
+          <p class="event-description">
+            Annual inter-department sports competition. Large quantities of packaged 
+            food and drinks typically available after event.
+          </p>
+          <div class="event-actions">
+            <button class="btn">Sync to CampusShare</button>
+          </div>
+        </div>
+        
+        <!-- Event 4 -->
+        <div class="event-card" data-department="cultural" data-month="oct">
+          <div class="event-header">
+            <h3 class="event-title">Cultural Night</h3>
+            <span class="event-date">Oct 7, 2023</span>
+          </div>
+          <div class="event-details">
+            <span>🏛️ <i>Open Air Theater</i></span>
+            <span>🕘 <i>6:00 PM - 11:00 PM</i></span>
+            <span>👥 <i>Cultural Committee</i></span>
+          </div>
+          <p class="event-description">
+            Evening of performances showcasing diverse cultures. Catered dinner for 
+            performers often has significant surplus.
+          </p>
+          <div class="event-actions">
+            <button class="btn">Sync to CampusShare</button>
+          </div>
+        </div>
+        
+        <!-- Event 5 -->
+        <div class="event-card" data-department="academic" data-month="nov">
+          <div class="event-header">
+            <h3 class="event-title">Science Symposium</h3>
+            <span class="event-date">Nov 10-11, 2023</span>
+          </div>
+          <div class="event-details">
+            <span>🏛️ <i>Science Block</i></span>
+            <span>🕘 <i>9:30 AM - 4:30 PM</i></span>
+            <span>👥 <i>Science Departments</i></span>
+          </div>
+          <p class="event-description">
+            Research presentations and guest lectures. Coffee breaks and lunch provided 
+            with typically 20-30% surplus.
+          </p>
+          <div class="event-actions">
+            <button class="btn">Sync to CampusShare</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // JavaScript for College Events Calendar
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sync buttons functionality
+      const syncButtons = document.querySelectorAll('.event-actions .btn');
+      const syncAllButton = document.querySelector('.btn.sync');
+      
+      syncButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const eventCard = this.closest('.event-card');
+          const eventTitle = eventCard.querySelector('.event-title').textContent;
+          
+          this.textContent = 'Synced ✓';
+          this.style.backgroundColor = '#388E3C';
+          this.disabled = true;
+          
+          console.log(`Synced event: ${eventTitle}`);
+          // In real app, would make API call to sync this event
+        });
+      });
+      
+      syncAllButton.addEventListener('click', function() {
+        const unsyncedEvents = document.querySelectorAll('.event-actions .btn:not([disabled])');
+        
+        if (unsyncedEvents.length === 0) {
+          alert('All events are already synced!');
+          return;
+        }
+        
+        if (confirm(`Sync all ${unsyncedEvents.length} unsynced events?`)) {
+          unsyncedEvents.forEach(button => {
+            button.click(); // Trigger sync for each
+          });
+          this.textContent = 'All Events Synced ✓';
+          this.style.backgroundColor = '#388E3C';
+          this.disabled = true;
+        }
+      });
+      
+      // Filter functionality
+      const searchInput = document.getElementById('searchInput');
+      const departmentFilter = document.getElementById('departmentFilter');
+      const monthFilter = document.getElementById('monthFilter');
+      
+      function filterEvents() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const department = departmentFilter.value;
+        const month = monthFilter.value;
+        
+        document.querySelectorAll('.event-card').forEach(card => {
+          const title = card.querySelector('.event-title').textContent.toLowerCase();
+          const description = card.querySelector('.event-description').textContent.toLowerCase();
+          const cardDepartment = card.getAttribute('data-department');
+          const cardMonth = card.getAttribute('data-month');
+          
+          const matchesSearch = searchTerm === '' || 
+                              title.includes(searchTerm) || 
+                              description.includes(searchTerm);
+          const matchesDept = department === '' || cardDepartment === department;
+          const matchesMonth = month === '' || cardMonth === month;
+          
+          card.style.display = (matchesSearch && matchesDept && matchesMonth) ? '' : 'none';
+        });
+      }
+      
+      searchInput.addEventListener('input', filterEvents);
+      departmentFilter.addEventListener('change', filterEvents);
+      monthFilter.addEventListener('change', filterEvents);
+    });
+  </script>
+</body>
+</html>

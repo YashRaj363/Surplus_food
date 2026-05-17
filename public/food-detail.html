@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reserve Food | Monarch Creative</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <style>
+    :root {
+      --primary: #2C5F2D;
+      --primary-light: #4CAF50;
+      --secondary: #FFC107;
+      --accent: #E8A87C;
+      --dark: #1A1A1A;
+      --light: #F9F9F9;
+      --gray: #6B7280;
+      --light-gray: #E5E7EB;
+      --white: #FFFFFF;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      --transition: all 0.3s ease;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      color: var(--dark);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+    }
+    
+    /* Background image with overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1490818387583-1baba5e638af?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80') center/cover no-repeat;
+      z-index: -2;
+    }
+    
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(44, 95, 45, 0.85);
+      z-index: -1;
+    }
+    
+    .container {
+      max-width: 1200px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.8s ease-out;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .header {
+      background: var(--primary);
+      color: var(--white);
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath fill='%23397D3D' d='M0,0 C0,0 100,50 200,0 L200,200 C200,200 100,150 0,200 L0,0 Z'%3E%3C/path%3E%3C/svg%3E");
+      background-size: cover;
+      opacity: 0.2;
+      z-index: 0;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .logo-text {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--white);
+    }
+    
+    .logo-icon {
+      margin-right: 10px;
+      font-size: 28px;
+      color: var(--secondary);
+    }
+    
+    .subtitle {
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      opacity: 0.9;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .main-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 28px;
+      margin: 20px 0;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .content {
+      padding: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 40px;
+    }
+    
+    .left-panel {
+      flex: 1;
+      min-width: 300px;
+    }
+    
+    .food-details {
+      background: var(--light);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: var(--shadow);
+      border-left: 5px solid var(--primary-light);
+    }
+    
+    .detail-item {
+      display: flex;
+      margin-bottom: 15px;
+      align-items: flex-start;
+    }
+    
+    .detail-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .detail-icon {
+      width: 24px;
+      height: 24px;
+      background: var(--primary-light);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 15px;
+      flex-shrink: 0;
+      font-size: 12px;
+    }
+    
+    .detail-text {
+      flex: 1;
+    }
+    
+    .detail-label {
+      font-weight: 600;
+      color: var(--primary);
+      display: block;
+      margin-bottom: 3px;
+    }
+    
+    .reserve-form {
+      background: var(--light);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+    
+    .form-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 18px 35px;
+      font-size: 18px;
+      font-weight: 500;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(44, 95, 45, 0.3);
+      width: 100%;
+      max-width: 300px;
+    }
+    
+    .btn:hover {
+      background: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(44, 95, 45, 0.4);
+    }
+    
+    .btn i {
+      margin-left: 8px;
+      transition: var(--transition);
+    }
+    
+    .btn:hover i {
+      transform: translateX(5px);
+    }
+    
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 300px;
+    }
+    
+    .qrcode-container {
+      text-align: center;
+      padding: 20px;
+      background: var(--light);
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      width: 100%;
+    }
+    
+    .qrcode-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      color: var(--primary);
+      margin-bottom: 15px;
+    }
+    
+    #qrcode {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    
+    .instructions {
+      margin-top: 15px;
+      font-size: 14px;
+      color: var(--gray);
+    }
+    
+    .bg-control {
+      margin-top: 30px;
+      background: var(--light);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      width: 100%;
+    }
+    
+    .bg-control-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      color: var(--primary);
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    
+    .bg-input {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .bg-input input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid var(--light-gray);
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+    }
+    
+    .bg-input button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    
+    .bg-input button:hover {
+      background: var(--primary-light);
+    }
+    
+    .footer {
+      margin-top: 30px;
+      text-align: center;
+      color: var(--gray);
+      font-size: 14px;
+      padding: 20px;
+      background: var(--light);
+      width: 100%;
+    }
+    
+    .leaf-decoration {
+      position: absolute;
+      width: 120px;
+      height: 120px;
+      opacity: 0.1;
+      z-index: 0;
+    }
+    
+    .leaf-1 {
+      top: 20px;
+      right: 20px;
+      transform: rotate(20deg);
+    }
+    
+    .leaf-2 {
+      bottom: 20px;
+      left: 20px;
+      transform: rotate(-15deg);
+    }
+    
+    @media (max-width: 900px) {
+      .content {
+        flex-direction: column;
+      }
+      
+      .right-panel {
+        order: -1;
+        margin-bottom: 30px;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .content {
+        padding: 25px;
+      }
+      
+      .main-title {
+        font-size: 24px;
+      }
+      
+      
+      
+      .btn {
+        padding: 16px 30px;
+        font-size: 16px;
+      }
+    }
+
+    .logo-text {
+  font-size: 38px;
+  font-weight: 900;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 1.5px;
+  padding-left: 0px;
+  padding-top: 1px;
+
+  /* Rich gold gradient with contrast */
+  background: linear-gradient(
+    120deg,
+    #b8860b 0%,
+    #d4af37 20%,
+    #c5a028 40%,
+    #ffd700 60%,   /* brighter strike for shine */
+    #a67c00 80%,
+    #b8860b 100%
+  );
+  background-size: 200% auto;  /* allow sliding */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.3),
+    0 2px 2px rgba(0, 0, 0, 0.4);
+
+  transition: background-position 1.2s ease-in-out;
+}
+.logo-text:hover {
+  background-position: right center;
+}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="leaf-decoration">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path fill="currentColor" d="M50,10 C70,10 90,30 90,50 C90,70 70,90 50,90 C30,90 10,70 10,50 C10,30 30,10 50,10 Z" />
+        </svg>
+      </div>
+      <div class="leaf-decoration leaf-2">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <path fill="currentColor" d="M50,10 C70,10 90,30 90,50 C90,70 70,90 50,90 C30,90 10,70 10,50 C10,30 30,10 50,10 Z" />
+        </svg>
+      </div>
+      
+      <div class="logo">
+        <i class="fas fa-crown logo-icon"></i>
+         <div>
+    <h1 class="logo-text">CampusShare</h1>
+  </div>
+      </div>
+      <div class="subtitle">CREATIVE EXPERIENCE</div>
+      <h1 class="main-title">Reserve Surplus Food</h1>
+    </div>
+    
+    <div class="content">
+      <div class="left-panel">
+        <div class="food-details">
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="fas fa-utensils"></i>
+            </div>
+            <div class="detail-text">
+              <span class="detail-label">Food Item</span>
+              <span id="foodTitle">Organic Vegetable Platter</span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="detail-text">
+              <span class="detail-label">Pickup Location</span>
+              <span id="foodLocation">Downtown Community Center, 123 Main St</span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="fas fa-clock"></i>
+            </div>
+            <div class="detail-text">
+              <span class="detail-label">Available Until</span>
+              <span id="foodExpiry">Today, 6:00 PM</span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="fas fa-sticky-note"></i>
+            </div>
+            <div class="detail-text">
+              <span class="detail-label">Special Notes</span>
+              <span id="foodNotes">Contains nuts. Gluten-free options available. Please bring your own container.</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="reserve-form">
+          <h3 class="form-title">Confirm Your Reservation</h3>
+          <p style="margin-bottom: 20px; color: var(--gray);">By confirming, you're helping reduce food waste and support your community.</p>
+          
+     <form id="reserveForm" action="https://formspree.io/f/manbgbqa" method="POST">
+  <input type="hidden" name="title" id="formTitle">
+  <input type="hidden" name="location" id="formLocation">
+  <input type="hidden" name="expiry" id="formExpiry">
+  <input type="hidden" name="notes" id="formNotes">
+  
+  <input type="hidden" name="_next" value="javascript:history.back()">
+  
+  <button type="submit" class="btn">
+    Reserve Now <i class="fas fa-arrow-right"></i>
+  </button>
+</form>
+        </div>
+      </div>
+      
+      <div class="right-panel">
+        <div class="qrcode-container">
+          <h3 class="qrcode-title">Pickup QR Code</h3>
+          <p class="instructions">Show this code when picking up your food donation</p>
+          <div id="qrcode"></div>
+          <p class="instructions">Scan to verify your reservation</p>
+        </div>
+        
+        <!-- <div class="bg-control">
+          <h3 class="bg-control-title">Customize Background</h3>
+          <div class="bg-input">
+            <input type="text" id="bgUrlInput" placeholder="Paste image URL here">
+            <button id="bgUpdateBtn">Update</button>
+          </div>
+          <p style="font-size: 12px; color: var(--gray); margin-top: 10px; text-align: center;">
+            Try: https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=1500&q=80
+          </p>
+        </div> -->
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>© 2025 CampusShare  • Reducing Food Waste, One Meal at a Time</p>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Simulate food data - in a real app this would come from localStorage
+      const food = {
+        title: "Organic Vegetable Platter",
+        location: "Downtown Community Center, 123 Main St",
+        expiryTime: "Today, 6:00 PM",
+        notes: "Contains nuts. Gluten-free options available. Please bring your own container."
+      };
+      
+      // Populate the food details
+      document.getElementById("foodTitle").textContent = food.title;
+      document.getElementById("foodLocation").textContent = food.location;
+      document.getElementById("foodExpiry").textContent = food.expiryTime;
+      document.getElementById("foodNotes").textContent = food.notes;
+      
+      // Fill form data
+      document.getElementById("formTitle").value = food.title;
+      document.getElementById("formLocation").value = food.location;
+      document.getElementById("formExpiry").value = food.expiryTime;
+      document.getElementById("formNotes").value = food.notes;
+      
+      // Generate QR code
+      const qrText = "https://yourwebsite.com/verify.html?id=" + Math.random().toString(36).substring(2, 15);
+      QRCode.toCanvas(document.createElement("canvas"), qrText, { 
+        width: 250, 
+        margin: 1,
+        color: {
+          dark: '#2C5F2D',
+          light: '#FFFFFF'
+        }
+      }, function(err, canvas) {
+        if (!err) {
+          document.getElementById("qrcode").appendChild(canvas);
+        }
+      });
+      
+      // Background image update functionality
+      document.getElementById('bgUpdateBtn').addEventListener('click', function() {
+        const bgUrl = document.getElementById('bgUrlInput').value;
+        if (bgUrl) {
+          document.body.style.backgroundImage = `url(${bgUrl})`;
+        }
+      });
+    });
+  </script>
+</body>
+</html>

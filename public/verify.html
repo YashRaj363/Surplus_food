@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Verify Access</title>
+</head>
+<body>
+  <h2 id="result"></h2>
+
+  <script>
+    // ✅ Change this to your own fixed email
+    const myEmail = "gaurav@example.com";
+
+    // Ask the person scanning to enter their email
+    const entered = prompt("Enter your email:");
+
+    if (entered === myEmail) {
+      document.getElementById("result").textContent = "✅ Access OK";
+    } else {
+      document.getElementById("result").textContent = "❌ Access Denied";
+    }
+  </script>
+</body>
+</html>

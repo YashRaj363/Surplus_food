@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NourishElite — Luxury Food Donation Platform</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Base Styles & Variables */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0D0D0D 0%, #006644 100%);
+      --primary-btn-gradient: linear-gradient(135deg, #00F5FF 0%, #7CFF6B 100%);
+      --secondary-btn-gradient: linear-gradient(135deg, #FF8FA3 0%, #FFD6BA 100%);
+      --text-white: #FDFDFD;
+      --card-bg: rgba(255, 255, 255, 0.08);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --hover-effect: rgba(255, 255, 255, 0.05);
+      
+      --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.3);
+      --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.35);
+      
+      --radius-sm: 8px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      
+      --transition: all 0.3s ease;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: var(--text-white);
+      background: var(--bg-gradient);
+      position: relative;
+      min-height: 100vh;
+    }
+
+    /* Background image with overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTnNE0jE9g7TpsLMU6sIlCIcQ285JaWEV524w&s');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      opacity: 0.15;
+      z-index: -1;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+      color: var(--text-white);
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      letter-spacing: -0.5px;
+    }
+
+    h2 {
+      font-size: 2.2rem;
+    }
+
+    h3 {
+      font-size: 1.6rem;
+    }
+
+    p {
+      margin-bottom: 1rem;
+      color: rgba(253, 253, 253, 0.85);
+    }
+
+    a {
+      color: var(--text-white);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    a:hover {
+      color: #7CFF6B;
+    }
+
+    /* Layout Components */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 0;
+    }
+
+    /* Header & Navigation */
+    .topbar {
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(8px);
+      box-shadow: var(--shadow-sm);
+       height: 90px;          /* fixed navbar height */
+  padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(124, 255, 107, 0.2);
+    }
+    .logoo {
+  height: 100%;          /* fill navbar height */
+  max-height: 90px;      /* prevent overflow */
+  width: auto;           /* keep proportions */
+}
+
+    .brand {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: var(--primary-btn-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+      letter-spacing: 0.5px;
+    }
+
+    .brand::before {
+      content: "♻️";
+      margin-right: 0.5rem;
+      font-size: 1.2em;
+    }
+
+    .nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav a, .nav button {
+      color: var(--text-white);
+      font-weight: 500;
+      position: relative;
+      padding: 0.5rem 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: inherit;
+      font-family: inherit;
+    }
+
+    .nav a:hover, .nav button:hover {
+      color: #7CFF6B;
+    }
+
+    .nav a::after, .nav button::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-btn-gradient);
+      transition: var(--transition);
+    }
+
+    .nav a:hover::after, .nav button:hover::after {
+      width: 100%;
+    }
+
+    .auth-buttons, .user-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      padding: 0.75rem 1.5rem;
+      background: var(--primary-btn-gradient);
+      color: #0D0D0D;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn:hover::before {
+      opacity: 1;
+    }
+
+    .btn.small {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .btn.outline {
+      background: transparent;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      color: var(--text-white);
+      position: relative;
+    }
+
+    .btn.outline::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: var(--primary-btn-gradient);
+      border-radius: var(--radius-sm);
+      z-index: -1;
+    }
+
+    .btn.outline:hover {
+      background: var(--primary-btn-gradient);
+      color: #0D0D0D;
+    }
+
+    .btn.rose {
+      background: var(--secondary-btn-gradient);
+      color: #0D0D0D;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--primary-btn-gradient);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-4px);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: rgba(0, 0, 0, 0.4);
+      color: var(--text-white);
+      text-align: center;
+      padding: 4rem 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(124, 255, 107, 0.2);
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80') center/cover;
+      opacity: 0.2;
+      z-index: -1;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      color: rgba(253, 253, 253, 0.9);
+    }
+
+    .cta-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Stats Section */
+    .quick-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 1.5rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-top: 4px solid transparent;
+      border-image: var(--primary-btn-gradient);
+      border-image-slice: 1;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+
+    .stat:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 60px;
+      height: 60px;
+      background: var(--primary-btn-gradient);
+      opacity: 0.1;
+      border-radius: 50%;
+      transform: translate(30%, 30%);
+    }
+
+    .stat h2 {
+      font-size: 2.5rem;
+      background: var(--primary-btn-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+      font-weight: 800;
+    }
+
+    .stat p {
+      color: rgba(253, 253, 253, 0.8);
+      font-size: 1rem;
+      font-weight: 500;
+    }
+
+    /* Recent Listings */
+    .recent-listings {
+      position: relative;
+    }
+
+    .recent-listings h3 {
+      margin-bottom: 1.5rem;
+      background: var(--primary-btn-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+    }
+
+    .recent-listings h3::before {
+      content: "🍲";
+      margin-right: 0.75rem;
+    }
+
+    .list {
+      list-style: none;
+    }
+
+    .list li {
+      padding: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .list li:hover {
+      background: var(--hover-effect);
+    }
+
+    .list li:last-child {
+      border-bottom: none;
+    }
+
+    .list-item-title {
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .list-item-meta {
+      display: flex;
+      gap: 1rem;
+      font-size: 0.9rem;
+      color: rgba(253, 253, 253, 0.7);
+    }
+
+    .list-item-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* How it Works */
+    .how-it-works {
+      background: rgba(0, 102, 68, 0.15);
+      border-left: 4px solid transparent;
+      border-image: var(--primary-btn-gradient);
+      border-image-slice: 1;
+    }
+
+    .how-it-works h3 {
+      background: var(--primary-btn-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+    }
+
+    .how-it-works h3::before {
+      content: "❓";
+      margin-right: 0.75rem;
+    }
+
+    .how-it-works ol {
+      padding-left: 1.5rem;
+    }
+
+    .how-it-works li {
+      margin-bottom: 1rem;
+      padding-left: 0.5rem;
+      color: rgba(253, 253, 253, 0.9);
+    }
+
+    .how-it-works li::marker {
+      background: var(--primary-btn-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: bold;
+    }
+
+    /* Footer */
+    .footer {
+      background: rgba(13, 13, 13, 0.9);
+      color: var(--text-white);
+      text-align: center;
+      padding: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid rgba(124, 255, 107, 0.2);
+    }
+
+    .footer p {
+      margin-bottom: 0.5rem;
+    }
+
+    .footer small {
+      opacity: 0.7;
+      font-size: 0.85rem;
+    }
+
+    /* Animations */
+    @keyframes countUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .count-up {
+      animation: countUp 1s ease-out forwards;
+    }
+
+    /* Profile link handling */
+    .profile-link {
+      display: none;
+    }
+
+    .logged-in .auth-buttons {
+      display: none;
+    }
+
+    .logged-in .profile-link {
+      display: inline-block;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .topbar {
+        flex-direction: column;
+        padding: 1rem;
+      }
+      
+      .nav {
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .hero h1 {
+        font-size: 2rem;
+      }
+      
+      .hero p {
+        font-size: 1rem;
+      }
+      
+      .quick-stats {
+        grid-template-columns: 1fr;
+      }
+      
+      .cta-group {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .btn {
+        width: 100%;
+        max-width: 250px;
+      }
+
+      .auth-buttons {
+        margin: 0.5rem 0;
+      }
+    }
+
+    /* Features Section */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(1px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow-md);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-icon {
+      width: 70px;
+      height: 70px;
+      background: rgba(0, 245, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #00F5FF;
+      margin: 0 auto 1rem;
+    }
+
+    .feature-content h3 {
+      margin-bottom: 0.5rem;
+      background: var(--primary-btn-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Events Section */
+    .events-section {
+      background: rgba(255, 143, 163, 0.1);
+      padding: 2rem;
+      border-radius: var(--radius-md);
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 214, 186, 0.2);
+    }
+
+    .events-section h3 {
+      background: var(--secondary-btn-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: flex;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .events-section h3::before {
+      content: "📅";
+      margin-right: 0.75rem;
+    }
+
+    .events-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .event-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .event-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .event-date {
+      background: var(--primary-btn-gradient);
+      color: #0D0D0D;
+      padding: 0.75rem;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .event-content {
+      padding: 1.5rem;
+    }
+
+    .event-content h4 {
+      margin-bottom: 0.5rem;
+      color: var(--text-white);
+    }
+
+    /* Social media icons */
+    .social-icons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+
+    .social-icons a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: var(--primary-btn-gradient);
+      color: #0D0D0D;
+      border-radius: 50%;
+      transition: var(--transition);
+    }
+
+    .social-icons a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 245, 255, 0.4);
+    }
+.logo-text {
+  font-size: 28px;
+  font-weight: 600;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 1.5px;
+  padding-left: 26px;
+  padding-top: 14px;
+
+  /* Rich gold gradient with contrast */
+  background: linear-gradient(
+    120deg,
+    #b8860b 0%,
+    #d4af37 20%,
+    #c5a028 40%,
+    #ffd700 60%,   /* brighter strike for shine */
+    #a67c00 80%,
+    #b8860b 100%
+  );
+  background-size: 200% auto;  /* allow sliding */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  text-shadow:
+    0 1px 1px rgba(255, 255, 255, 0.3),
+    0 2px 2px rgba(0, 0, 0, 0.4);
+
+  transition: background-position 1.2s ease-in-out;
+}
+
+/* Gradient "flow" on hover */
+.logo-text:hover {
+  background-position: right center;
+}
+
+
+
+
+  </style>
+</head>
+<body>
+  <!-- Top Bar -->
+ <header class="topbar">
+  <div>
+    <h1 class="logo-text">CampusShare</h1>
+  </div>
+
+    <nav class="nav">
+      <a href="index.html">Home</a>
+      <a href="availablefood.html">Available Food</a>
+      <a href="impact.html">Impact</a>
+      <a href="events.html">Events</a>
+      <div class="auth-buttons">
+        <a href="login.html" class="btn outline small">Login</a>
+        <a href="register.html" class="btn small">Register</a>
+      </div>
+      <div class="user-actions" style="display: none;">
+        <a href="addsurplus.html" class="btn outline small">Add Surplus</a>
+        <a href="events.html">Events</a>
+        <a href="profile.html" class="profile-link">Profile</a>
+        <button id="logout-btn" class="btn outline small">Logout</button>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <!-- Hero Section -->
+    <section class="hero card">
+      <h1>Reduce Waste. Nourish Communities.</h1>
+      <p>Connect surplus food with those in need through our elegant donation platform</p>
+      <div class="cta-group">
+        <a href="addsurplus.html" class="btn rose">Donate Food</a>
+        <a href="availablefood.html" class="btn outline">Find Available Food</a>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <h2>How We Make a Difference</h2>
+   
+
+    <!-- Stats Section -->
+    <section class="quick-stats">
+      <article class="card stat">
+        <h2 id="platesSaved">0</h2>
+        <p>Meals Donated</p>
+      </article>
+      <article class="card stat">
+        <h2 id="peopleFed">0</h2>
+        <p>People Nourished</p>
+      </article>
+      <article class="card stat">
+        <h2 id="co2Saved">0</h2>
+        <p>CO₂ Tons Saved</p>
+      </article>
+      <article class="card stat">
+        <h2 id="partners">0</h2>
+        <p>Partner Organizations</p>
+      </article>
+    </section>
+
+    <!-- Recent Listings -->
+    <section class="recent-listings card">
+      <h3>Recent Food Donations</h3>
+      <ul id="recentList" class="list">
+        <!-- JS will inject sample items -->
+      </ul>
+    </section>
+
+    <!-- Events Section -->
+    <section class="events-section card">
+      <h3>Upcoming Events</h3>
+      <div class="events-grid">
+        <div class="event-card">
+          <div class="event-date">Aug 25, 2023</div>
+          <div class="event-content">
+            <h4>Community Food Drive</h4>
+            <p>Join us in collecting non-perishable items for local shelters</p>
+            <a href="#" class="btn small">Learn More</a>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Sep 3, 2023</div>
+          <div class="event-content">
+            <h4>Volunteer Training</h4>
+            <p>Training session for new food rescue volunteers</p>
+            <a href="#" class="btn small">Register</a>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Sep 15, 2023</div>
+          <div class="event-content">
+            <h4>Annual Fundraiser Gala</h4>
+            <p>An elegant evening supporting our mission to end food waste</p>
+            <a href="#" class="btn small rose">Get Tickets</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it Works -->
+    <section class="how-it-works card">
+      <h3>How It Works</h3>
+      <ol>
+        <li>Food providers list surplus meals with details on quantity and pickup window</li>
+        <li>Registered receivers and NGOs receive notifications about available donations</li>
+        <li>Verified volunteers coordinate pickup and delivery using our streamlined system</li>
+        <li>Every donation is tracked to measure our collective impact</li>
+      </ol>
+      <div class="social-icons">
+    <a href="https://www.linkedin.com/in/kumar-gaurav-ab037b290?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"><i class="fab fa-linkedin-in"></i></a>
+        <a href="https://x.com/gauravkuma85885?t=XnnFd66JAy4KdpmDrt0O5w&s=09"><i class="fab fa-twitter"></i></a>
+        <a href="https://www.instagram.com/kumar.gaurav._/profilecard/?igsh=MWJybXY4MmJjZnNuag=="><i class="fab fa-instagram"></i></a>
+       
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>NourishElite — Elegant Solutions to Food Insecurity</p>
+    <p><small>© 2023 All Rights Reserved | Sustainable NGO Platform</small></p>
+  </footer>
+
+  <script>
+    // Sample data for recent listings
+    const recentListings = [
+      { food: 'Fresh Sandwiches', location: 'Corporate Cafe', time: '30 mins ago', quantity: '25 meals' },
+      { food: 'Fruit Baskets', location: 'Local Grocery', time: '1 hour ago', quantity: '12 units' },
+      { food: 'Salad Bar Leftovers', location: 'University Dining', time: '2 hours ago', quantity: '18 portions' },
+      { food: 'Bakery Items', location: 'Artisan Bakery', time: '3 hours ago', quantity: '30 items' },
+      { food: 'Hot Prepared Meals', location: 'Catering Company', time: '4 hours ago', quantity: '40 servings' }
+    ];
+
+    // Populate recent listings
+    document.addEventListener('DOMContentLoaded', function() {
+      const recentList = document.getElementById('recentList');
+      recentList.innerHTML = ''; // Clear existing content
+      
+      recentListings.forEach(item => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span class="list-item-title">${item.food}</span>
+          <span class="list-item-meta">
+            <span title="Location">📍 ${item.location}</span>
+            <span title="Quantity">📊 ${item.quantity}</span>
+            <span title="Time posted">⏱ ${item.time}</span>
+          </span>
+        `;
+        recentList.appendChild(li);
+      });
+
+      // Animate stats counters
+      function animateValue(id, start, end, duration, suffix = '') {
+        const obj = document.getElementById(id);
+        let startTimestamp = null;
+        const step = (timestamp) => {
+          if (!startTimestamp) startTimestamp = timestamp;
+          const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+          const value = Math.floor(progress * (end - start) + start);
+          obj.innerHTML = value.toLocaleString() + suffix;
+          if (progress < 1) {
+            window.requestAnimationFrame(step);
+          } else {
+            obj.classList.add('count-up');
+          }
+        };
+        window.requestAnimationFrame(step);
+      }
+
+      // Start animations with sample data
+      setTimeout(() => {
+        animateValue('platesSaved', 0, 1243, 2000);
+        animateValue('peopleFed', 0, 872, 2000);
+        animateValue('co2Saved', 0, 43, 2000);
+        animateValue('partners', 0, 28, 2000);
+      }, 500);
+
+      // Check auth state
+      const token = localStorage.getItem('token');
+      const authButtons = document.querySelector('.auth-buttons');
+      const userActions = document.querySelector('.user-actions');
+
+      if (token) {
+        authButtons.style.display = 'none';
+        userActions.style.display = 'flex';
+      } else {
+        authButtons.style.display = 'flex';
+        userActions.style.display = 'none';
+      }
+
+      const logoutBtn = document.getElementById('logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+          localStorage.removeItem('token');
+          window.location.reload();
+        });
+      }
+    });
+  </script>
+</body>
+</html>
